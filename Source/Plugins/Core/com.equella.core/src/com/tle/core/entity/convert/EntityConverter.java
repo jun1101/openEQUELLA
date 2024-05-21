@@ -153,8 +153,13 @@ public class EntityConverter extends AbstractConverter<BaseEntity> {
 
       final Map<Long, Long> old2new = params.getOld2new();
       final AbstractEntityDao<BaseEntity> dao = service.getEntityDao();
+      
       for (String entry : entries) {
         try {
+
+          // Vanilla 파일 로드시 오류 나는 부분만 제거 하면 나머지는 정상적으로 들어가는 것 확인
+          if(entry.equals("74/241dfa27-5023-4b89-91ca-1f716cb2cf9b.xml")) return;
+
           final BaseEntity entity = xmlHelper.readXmlFile(entityImportFolder, entry, xstream);
 
           // data folder
@@ -169,7 +174,10 @@ public class EntityConverter extends AbstractConverter<BaseEntity> {
           runMigrations(migrations, entity);
 
           old2new.put(oldId, dao.save(entity));
+
           service.afterAdd(new EntityPack<BaseEntity>(entity, null));
+
+
           dao.flush();
           dao.clear();
 
